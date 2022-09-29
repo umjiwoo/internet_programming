@@ -112,6 +112,8 @@ ENV/
 env.bak/
 venv.bak/
 
+internet_programming
+
 .idea/
 
 # Spyder project settings
