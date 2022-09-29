@@ -10,4 +10,7 @@ class Post(models.Model):  # 클래스 이름이 곧 모델 이름
     # TODO author 필드 추가
 
     def __str__(self):
-        return f'[{self.pk}] {self.title}'
+        return f'[{self.pk}] {self.title} {self.created_at}'
+
+    def get_absolute_url(self):
+        return f'/blog/{self.pk}/'
