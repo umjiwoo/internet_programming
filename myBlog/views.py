@@ -16,7 +16,9 @@ from myBlog.models import Post
 class PostList(ListView):
     model = Post
     ordering = '-pk'
+    # 매개변수 => post_list
 
 
 class PostDetail(DetailView):
     model = Post
+    # 매개변수 => post
