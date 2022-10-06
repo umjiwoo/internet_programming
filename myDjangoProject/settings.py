@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -108,6 +109,11 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# 저장될 때는 _media 폴더가 프로젝트 루트 디렉터리 밑에 생성되어 저장되고
+# 접근 시에는 /media/~ 로 접근 가능
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, '_media')  # 현재 프로젝트가 있는 폴터 밑에 _media 폴더를 만들어서 저장할 것
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
