@@ -62,7 +62,11 @@
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
                         </header>
                         <!-- Preview image figure-->
+                        {% if post.head_image %}
                         <figure class="mb-4"><img class="img-fluid rounded" src="{{post.head_image.url}}" alt="{{post.title}}의 head_image" /></figure>
+                        {% else %}
+                        <img class="card-img-top" src="https://picsum.photos/seed/{{post.pk}}/800/400" alt="외부 사이트에서 받아온 랜덤 이미지" />
+                        {% endif %}
                         <!-- Post content-->
                         <section class="mb-5">
                             <p class="fs-5 mb-4">{{post.content}}</p>
