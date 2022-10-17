@@ -104,7 +104,8 @@
         <!--블로그 게시물 부분-->
         <div class="container">
           <div class="row">
-            <div class="col-md-8 col-lg-9">
+            <div class="col-md-8 col-lg-9" id="main-area">
+              {% if post_list.exists %}
               {% for p in post_list %}
               <!-- 게시물 하나 -->
               <div class="card mb-4">
@@ -127,6 +128,9 @@
                 </div>
               </div>
               {% endfor %}
+              {% else %}
+              <h5>아직 게시물이 없습니다.</h5>
+              {% endif %}
               </div>
               <!-- Pagination-->
               <nav aria-label="Pagination">
