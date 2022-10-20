@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from bs4 import BeautifulSoup
 from .models import Post
+from django.contrib.auth.models import User
 
 
 # 테스트 명령어 실행 -> python manage.py test
@@ -13,6 +14,8 @@ class TestView(TestCase):
     def setUp(self):
         self.client = Client()
         # Client()->실제 경로의 뷰
+        self.jiwoo = User.objects.create(username="jiwoo", password="jiwoo1234")
+        self.test_jiwoo = User.objects.create(username="test_jiwoo", password="jiwoo1234")
 
     def test_post_list(self):
         self.assertEqual(3, 3)  # 괄호 안에 있는 것들끼리 같은지 확인
@@ -27,7 +30,7 @@ class TestView(TestCase):
 
         # title 이 정상적으로 보이는 지 확인
         # soup.title 하면 태그 포함된 내용 리턴 : <title>Blog</title>
-        self.assertEqual(soup.title.text, 'Blog')
+        self.assertEqual(soup.title.text, 'BLOG')
 
         # navbar 가 정상적으로 보이는 지 확인
         navbar = soup.nav
@@ -43,8 +46,8 @@ class TestView(TestCase):
         self.assertIn('아직 게시물이 없습니다.', main_area.text)
 
         # Post 가 추가된 경우
-        post_001 = Post.objects.create(title="첫번째 포스트", content="첫번째 포스트입니다.")
-        post_002 = Post.objects.create(title="두번째 포스트", content="두번째 포스트입니다.")
+        post_001 = Post.objects.create(title="첫번째 포스트", content="첫번째 포스트입니다.", author=self.jiwoo)
+        post_002 = Post.objects.create(title="두번째 포스트", content="두번째 포스트입니다.", author=self.test_jiwoo)
         self.assertEqual(Post.objects.count(), 2)
 
         response = self.client.get('/blog/')
@@ -55,8 +58,11 @@ class TestView(TestCase):
         self.assertIn(post_002.title, main_area.text)
         self.assertNotIn('아직 게시물이 없습니다.', main_area.text)
 
+        self.assertIn(post_001.author.username.upper(), main_area.text)
+        self.assertIn(post_002.author.username.upper(), main_area.text)
+
     def test_post_detail(self):
-        post_001 = Post.objects.create(title="첫번째 포스트", content="첫번째 포스트입니다.")
+        post_001 = Post.objects.create(title="첫번째 포스트", content="첫번째 포스트입니다.", author=self.jiwoo)
         self.assertEqual(post_001.get_absolute_url(), '/blog/1/')
 
         response = self.client.get(post_001.get_absolute_url())
@@ -74,3 +80,4 @@ class TestView(TestCase):
         post_area = main_area.find('div', id='post-area')
         self.assertIn(post_001.title, post_area.text)
         self.assertIn(post_001.content, post_area.text)
+        self.assertIn(post_001.author.username.upper(), post_area.text)

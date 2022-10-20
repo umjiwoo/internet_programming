@@ -1,6 +1,7 @@
 import os
 
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Post(models.Model):  # 클래스 이름이 곧 모델 이름
@@ -15,10 +16,12 @@ class Post(models.Model):  # 클래스 이름이 곧 모델 이름
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # TODO author 필드 추가
+    # author = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Post의 외래키로 지정된 User 객체가 삭제되어도 해당 User가 게시한 Post 객체는 없어지지 않도록 함
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return f'[{self.pk}] {self.title} {self.created_at}'
+        return f'[{self.pk}] {self.title} - {self.author}     {self.created_at}'
 
     def get_absolute_url(self):
         return f'/blog/{self.pk}/'
