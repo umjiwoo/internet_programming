@@ -3,7 +3,10 @@
 {% block main_area%}
 <h2>Blog
     {% if category %}
-    - <span class="badge badge-danger">{{category}}</span>
+    - <span class="badge badge-pill">{{category}}</span>
+    {% endif %}
+    {% if tag %}
+    - <span class="badge badge-pill"><i class="fas fa-tag">{{tag}}</i></span>
     {% endif %}
 </h2>
 <!--        &lt;!&ndash;블로그 게시물 부분&ndash;&gt;-->
@@ -30,6 +33,16 @@
         <h5 class="text-muted"> {{p.hook_text}} </h5>
         {% endif %}
         <p class="card-text">{{p.content | truncatechars:100 }}</p>
+
+        {% if p.tags.exists %}
+        {% for tag in p.tags.iterator %}
+        <span class="badge badge-pill badge-light">
+            <i class="fas fa-tag"><a href="{{tag.get_absolute_url}}">{{tag}}</a></i>
+        </span>
+        {% endfor %}
+        {% endif %}
+        <br>
+
         <a class="btn btn-primary" href="{{p.get_absolute_url}}">Read more →</a>
     </div>
     <div class="card-footer">
