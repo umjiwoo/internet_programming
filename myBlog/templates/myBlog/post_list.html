@@ -1,14 +1,24 @@
 {% extends 'myBlog/base.html' %}
 
 {% block main_area%}
-<h2>Blog
-    {% if category %}
-    - <span class="badge badge-pill">{{category}}</span>
+    {% if user.is_authenticated %}
+        {% if user.is_superuser or user.is_staff %}
+            <i class="fa-light fa-pen">
+            <a class="btn btn-info float-right" href="create_post/" role="button">
+                New Post
+            </a>
+            </i>
+        {% endif %}
     {% endif %}
-    {% if tag %}
-    - <span class="badge badge-pill"><i class="fas fa-tag">{{tag}}</i></span>
-    {% endif %}
-</h2>
+
+    <h2>Blog
+        {% if category %}
+        - <span class="badge badge-pill">{{category}}</span>
+        {% endif %}
+        {% if tag %}
+        - <span class="badge badge-pill"><i class="fas fa-tag">{{tag}}</i></span>
+        {% endif %}
+    </h2>
 <!--        &lt;!&ndash;블로그 게시물 부분&ndash;&gt;-->
 <!--        <div class="container">-->
 <!--          <div class="row">-->
