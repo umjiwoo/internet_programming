@@ -22,6 +22,12 @@
             <a class="badge bg-secondary text-decoration-none link-light" href="/blog/category/no_category/">미분류</a>
         {% endif %}
     </header>
+
+    {% if user.is_authenticated and user == post.author %}
+        <a class="btn btn-info float-right" href="/blog/update_post/{{post.pk}}/" role="button">
+                <i class="fas fa-pen">Edit Post</i>
+        </a>
+    {% endif %}
     <!-- Preview image figure-->
     {% if post.head_image %}
     <figure class="mb-4"><img class="img-fluid rounded" src="{{post.head_image.url}}" alt="{{post.title}}의 head_image"/>
