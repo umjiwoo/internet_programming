@@ -20,6 +20,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # extern library
+    'crispy_forms',
+
     # app
     'myBlog',
     'single_pages',
@@ -119,3 +122,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '_media')  # 현재 프로젝트가 있는 �
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
