@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from myBlog.models import Post, Category, Tag
 from django.core.exceptions import PermissionDenied
+from django.utils.text import slugify
 
 
 # def index(request):
@@ -59,7 +60,22 @@ class PostCreate(CreateView, LoginRequiredMixin, UserPassesTestMixin):
         current_user = self.request.user
         if current_user.is_authenticated and current_user.is_superuser or current_user.is_staff:  # 요청 보낸 유저가 인가된 유저라면
             form.instance.author = current_user
-            return super(PostCreate, self).form_valid(form)
+            response = super(PostCreate, self).form_valid(form)
+
+            tags_str = self.request.POST.get('tags_str')
+            if tags_str:
+                tags_str = tags_str.strip()
+                tags_str = tags_str.replace(',', ';')
+                tag_list = tags_str.split(';')
+
+            for t in tag_list:
+                t = t.strip()
+                tag, created = Tag.objects.get_or_create(name=t)
+                if created:
+                    tag.slug = slugify(t, allow_unicode=True)
+                    tag.save()
+                self.object.tags.add(tag)  # 생성된 객체에 생성한 tag 추가
+            return response
         else:
             return redirect('/blog/')
 
@@ -72,7 +88,7 @@ class PostCreate(CreateView, LoginRequiredMixin, UserPassesTestMixin):
 
 class PostUpdate(UpdateView, LoginRequiredMixin):
     model = Post
-    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category', 'tags']
+    fields = ['title', 'hook_text', 'content', 'head_image', 'file_upload', 'category']
     template_name = 'myBlog/post_update_form.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -81,8 +97,35 @@ class PostUpdate(UpdateView, LoginRequiredMixin):
         else:
             raise PermissionDenied
 
+    def form_valid(self, form):  #dispatch 가 request 시 어떤 http 메소드를 사용해 들어오는 지 파악하고 POST면 form_valid 실행
+        response = super(PostUpdate, self).form_valid(form)
+
+        self.object.tags.clear()
+
+        tags_str = self.request.POST.get('tags_str')
+        if tags_str:
+            tags_str = tags_str.strip()
+            tags_str = tags_str.replace(',', ';')
+            tag_list = tags_str.split(';')
+
+        for t in tag_list:
+            t = t.strip()
+            tag, created = Tag.objects.get_or_create(name=t)
+            if created:
+                tag.slug = slugify(t, allow_unicode=True)
+                tag.save()
+            self.object.tags.add(tag)  # 생성된 객체에 생성한 tag 추가
+
+        return response
+
     def get_context_data(self, **kwargs):
         context = super(PostUpdate, self).get_context_data()  # 템플릿으로 전달할 내용을 담음
+
+        if self.object.tags.exists:
+            tag_str_list = list()
+            for t in self.object.tags.all():
+                tag_str_list.append(t.name)
+            context['tags_str_default'] = ';'.join(tag_str_list)
         context['categories'] = Category.objects.all()
         context['no_category_post_count'] = Post.objects.filter(category=None).count
         return context
