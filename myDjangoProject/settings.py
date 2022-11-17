@@ -21,7 +21,17 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # extern library
+    # -----------------------------------------#
+    # form
     'crispy_forms',
+
+    # login
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    # ----------------------------------------#
 
     # app
     'myBlog',
@@ -34,6 +44,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+# authenticate 방법 지정
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+# SNS 로그인 적용 시 사이트 번호가 1번인 페이지에서만 로그인 가능하게 함
+SITE_ID = 1
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+LOGIN_REDIRECT = '/blog/'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
