@@ -4,6 +4,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from myBlog.models import Post, Category, Tag
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
+from .forms import CommentForm
+from django.shortcuts import get_object_or_404
 
 
 # def index(request):
@@ -41,6 +43,7 @@ class PostDetail(DetailView):
         context = super(PostDetail, self).get_context_data()  # 템플릿으로 전달할 내용을 담음
         context['categories'] = Category.objects.all()
         context['no_category_post_count'] = Post.objects.filter(category=None).count
+        context['comment_form'] = CommentForm  # 컨텍스트에 CommentForm 객체 함께 보내 화면에서 해당 폼 사용
         return context
 
 
@@ -129,6 +132,25 @@ class PostUpdate(UpdateView, LoginRequiredMixin):
         context['categories'] = Category.objects.all()
         context['no_category_post_count'] = Post.objects.filter(category=None).count
         return context
+
+
+def new_comment(request, pk):
+    if request.user.is_authenticated:
+        post = get_object_or_404(Post, pk=pk)
+
+        if request.method == 'POST':
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.post = post
+                comment.author = request.user  # 댓글 작성 요청자는 로그인한 유저
+                comment.save()
+                return redirect(comment.get_absolute_url())
+
+        else:  # 요청 메소드가 POST가 아닌 경우
+            return redirect(post.get_absolute_url())
+    else:  # 요청자가 로근이 유저 아닌 경우
+        raise PermissionDenied
 
 
 def category_page(request, slug):

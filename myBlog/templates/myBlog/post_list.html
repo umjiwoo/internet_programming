@@ -2,7 +2,7 @@
 
 {% block main_area%}
     {% if user.is_authenticated %}
-        {% if user.is_superuser or user.is_staff %}
+        {% if user.is_authenticated or user.is_superuser or user.is_staff %}
             <a class="btn btn-info float-right" href="create_post/" role="button">
                 <i class="fas fa-pen">New Post</i>
             </a>

@@ -62,3 +62,18 @@ class Post(models.Model):  # 클래스 이름이 곧 모델 이름
 
     def get_file_ext(self):
         return self.get_file_name().split('.')[-1]
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.author} : {self.content}'
+
+    # get_absolute_url 함수 통해 해당 모델의 객체가 사이트의 어느 부분에 있는지 확인 가능
+    def get_absolute_url(self):
+        return f'{self.post.get_absolute_url()}#comment-{self.pk}'
