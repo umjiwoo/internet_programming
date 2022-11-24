@@ -5,12 +5,34 @@
     </div>
     <div class="card-body">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..."
+            <input id="search_input" class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..."
                    aria-describedby="button-search"/>
-            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+            <!-- onclick 옵션 통해 호출하고자 하는 자바스크립트 함수 지정 -->
+            <button class="btn btn-primary" id="button-search" type="button" onclick="searchPost()">Go!</button>
         </div>
     </div>
 </div>
+
+<!-- 자바 스크립트 함수 정의 -->
+<script>
+    function searchPost(){
+        let search_value = document.getElementById('search_input').value.trim();
+        if(search_value.length > 1){
+            location.href = "/blog/search/"+search_value+"/";
+        }
+        else{
+            alert('검색어('+search_value+')가 너무 짧습니다.')
+        }
+    };
+
+    // addEventListener('이벤트', 이벤트 발생 시 호출할 함수)
+    document.getElementById('search_input').addEventListener('keyup', function(event){
+        if(event.key === 'Enter'){
+            searchPost();
+        }
+    });
+</script>
+
 <!-- Categories widget-->
 <div class="card mb-4" id="category_card">
     <div class="card-header">Categories</div>

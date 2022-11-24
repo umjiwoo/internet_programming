@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from myBlog.models import Post, Category, Tag, Comment
@@ -193,3 +194,18 @@ def tag_page(request, slug):
         'categories': Category.objects.all(),
         'no_category_post_count': Post.objects.filter(category=None).count
     })
+
+
+class PostSearch(PostList):  # PostList 에서 지정한 ListView 상속받음, post_list 변수로 접근 가능, post_list.html
+    paginate_by = None
+
+    def get_queryset(self):
+        q = self.kwargs['q']
+        post_list = Post.objects.filter(Q(title__contains=q) | Q(tags__name__contains=1)).distinct()
+        return post_list
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostSearch, self).get_context_data()
+        q = self.kwargs['q']
+        context['search_info'] = f'Search: {q}({self.get_queryset().count()})'
+        return context
